@@ -60,8 +60,15 @@ img2 = cv2.imread(imgpath.format("1.jpg"), cv2.IMREAD_GRAYSCALE);
 
 height, width = img1.shape[:2];
 
-imgL = img1#cv2.undistort(img1, cameraMatrix1, distCoeffs1, None, None);
-imgR = img2#cv2.undistort(img2, cameraMatrix2, distCoeffs2, None, None);
+imgL = cv2.undistort(img1, cameraMatrix1, distCoeffs1, None, None);
+imgR = cv2.undistort(img2, cameraMatrix2, distCoeffs2, None, None);
+
+
+cv2.imshow("imgR", imgR);
+cv2.imshow("imgL", imgL);
+cv2.waitKey(0);
+cv2.destroyAllWindows();
+
 
 #calc match points
 orb = cv2.ORB_create();
@@ -82,10 +89,29 @@ for mat in matches:
 pts1 = np.int32(pts1);
 pts2 = np.int32(pts2);
 
+pts1 = [];
+pts2 = [];
+D_MATCH_THRES = 45.0
+for mat in matches:
+    if mat.distance < D_MATCH_THRES:
+        idx1 = mat.queryIdx;
+        idx2 = mat.trainIdx;
+        pts1.append(kp1[idx1].pt);
+        pts2.append(kp2[idx2].pt);
+pts1 = np.int32(pts1);
+pts2 = np.int32(pts2);
+
+draw_params = dict(matchColor = (0,255,0),
+                   matchesMask = None,
+                   flags = 0);
+displayImg = cv2.drawMatches(imgL, kp1, imgR, kp2, matches[:20], None, **draw_params);
+plt.imshow(displayImg), plt.show();
+cv2.imwrite(imgpath.format("matching_2.jpg"), displayImg);
+
 
 
 #calc fundamental matrix
-F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_LMEDS);#ロバスト推定
+F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_8POINT);#ロバスト推定
 ret, HL, HR = cv2.stereoRectifyUncalibrated(pts1, pts2, F, (width,height));
 dstL = cv2.warpPerspective(imgL, HL, (width,height));
 dstR = cv2.warpPerspective(imgR, HR, (width,height));
@@ -105,10 +131,11 @@ matches = sorted(matches,key = lambda x:x.distance);
 pts1 = [];
 pts2 = [];
 for mat in matches:
-    idx1 = mat.queryIdx;
-    idx2 = mat.trainIdx;
-    pts1.append(kp1[idx1].pt);
-    pts2.append(kp2[idx2].pt);
+    if mat.distance < D_MATCH_THRES:
+        idx1 = mat.queryIdx;
+        idx2 = mat.trainIdx;
+        pts1.append(kp1[idx1].pt);
+        pts2.append(kp2[idx2].pt);
 pts1 = np.int32(pts1);
 pts2 = np.int32(pts2);
 
