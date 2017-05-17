@@ -23,8 +23,12 @@ while(True):
     if key == ord("a"):
         break;
     if key == ord("s"):
-        cv2.imwrite(imgpath2.format(0, i), frame);
-        cv2.imwrite(imgpath2.format(1, i), frame2);
+        #cv2.imwrite(imgpath.format(1, i), frame);
+        #cv2.imwrite(imgpath.format(2, i), frame2);
+        
+        cv2.imwrite(imgpath2.format(i), frame);
+        cv2.imwrite(imgpath2.format(i+1), frame2);
+        
         i += 1;
 
 

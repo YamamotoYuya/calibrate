@@ -10,10 +10,8 @@ PATTERN_SIZE = 9;
 import sys
 import cv2
 import numpy as np
-import xml.etree.ElementTree as ET
 
 imgpath = "C:/Users/i13yamamoto2y/Documents/tmp/camera{0}/{1}.jpg";
-xmlpath = "C:/Users/i13yamamoto2y/Documents/tmp/camera{0}/{1}.xml";
 imgpath2 = r"C:\Users\i13yamamoto2y\Documents\tmp\stereo\{0}.jpg";
 
 #create virtual chessboard
@@ -58,10 +56,14 @@ ret, cameraMatrix2, distCoeffs2, rvecs2, tvecs2 = cv2.calibrateCamera(objectPoin
 #dist = cv2.undistort(img2, cameraMatrix2, distCoeffs2, None, None);
 
 
+img1 = cv2.imread(imgpath2.format(0), cv2.IMREAD_GRAYSCALE);
+img2 = cv2.imread(imgpath2.format(1), cv2.IMREAD_GRAYSCALE);
+
+
 
 from matplotlib import pyplot as plt
 import sys
-orb = cv2.ORB_create();
+orb = cv2.sift_create();
 kp1, des1 = orb.detectAndCompute(img1, None);
 kp2, des2 = orb.detectAndCompute(img2, None);
 
@@ -71,9 +73,9 @@ matches = sorted(matches,key = lambda x:x.distance);
 draw_params = dict(matchColor = (0,255,0),
                    matchesMask = None,
                    flags = 0);
-displayImg = cv2.drawMatches(img1, kp1, img2, kp2, matches, None, **draw_params);
+displayImg = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], None, **draw_params);
 plt.imshow(displayImg), plt.show();
-cv2.imwrite(imgpath.format(1, "matching_1.jpg"), displayImg);
+cv2.imwrite(imgpath2.format("streoMatching_1"), displayImg);
 
 
 
@@ -114,15 +116,17 @@ matches = sorted(matches,key = lambda x:x.distance);
 draw_params = dict(matchColor = (0,255,0),
                    matchesMask = None,
                    flags = 0);
-displayImg = cv2.drawMatches(dstImgL, kp1, dstImgR, kp2, matches[:10], None, **draw_params);
+displayImg = cv2.drawMatches(dstImgL, kp1, dstImgR, kp2, matches[:30], None, **draw_params);
 plt.imshow(displayImg), plt.show();
-cv2.imwrite(imgpath.format(1, "matching_2.jpg"), displayImg);
+cv2.imwrite(imgpath2.format("stereoMatching_2"), displayImg);
 
 
-stereo = cv2.StereoBM_create(16);
+stereo = cv2.StereoSGBM_create(0, 16, 3, 21, 30, 100);
 display = stereo.compute(dstImgL, dstImgR);
-#b = cv2.normalize(display, display, alpha=0, beta=1, norm_type=1);
-cv2.imwrite(imgpath.format(1, "streo.jpg"), display);
+
+cv2.imwrite(imgpath2.format("streoMatching_result"), display);
+cv2.imwrite(imgpath2.format("streoMatching_L"), dstImgL);
+cv2.imwrite(imgpath2.format("streoMatching_R"), dstImgR);
 display = display.astype(np.uint8);
 
 cv2.imshow("imgL", dstImgL);

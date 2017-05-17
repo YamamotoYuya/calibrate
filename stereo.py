@@ -106,12 +106,12 @@ draw_params = dict(matchColor = (0,255,0),
                    flags = 0);
 displayImg = cv2.drawMatches(imgL, kp1, imgR, kp2, matches[:20], None, **draw_params);
 plt.imshow(displayImg), plt.show();
-cv2.imwrite(imgpath.format("matching_2.jpg"), displayImg);
+cv2.imwrite(imgpath.format("matching_1.jpg"), displayImg);
 
 
 
 #calc fundamental matrix
-F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_8POINT);#ロバスト推定
+F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_8POINT);#FM_8POINT, FM_RANSAC, FM_LMEDS 
 ret, HL, HR = cv2.stereoRectifyUncalibrated(pts1, pts2, F, (width,height));
 dstL = cv2.warpPerspective(imgL, HL, (width,height));
 dstR = cv2.warpPerspective(imgR, HR, (width,height));
@@ -119,6 +119,7 @@ dstR = cv2.warpPerspective(imgR, HR, (width,height));
 #stereoBM
 stereo = cv2.StereoBM_create(16);
 disp = stereo.compute(dstL, dstR);
+
 
 orb = cv2.ORB_create();
 kp1, des1 = orb.detectAndCompute(dstL, None);
