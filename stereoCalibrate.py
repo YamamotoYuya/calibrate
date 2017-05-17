@@ -63,9 +63,11 @@ img2 = cv2.imread(imgpath2.format(1), cv2.IMREAD_GRAYSCALE);
 
 from matplotlib import pyplot as plt
 import sys
-orb = cv2.sift_create();
+orb = cv2.xfeatures2d.SURF_create();
 kp1, des1 = orb.detectAndCompute(img1, None);
 kp2, des2 = orb.detectAndCompute(img2, None);
+des1 = des1.astype(np.uint8);
+des2 = des2.astype(np.uint8);
 
 bf = cv2.BFMatcher(cv2.NORM_HAMMING, True);
 matches = bf.match(des1, des2);
@@ -106,9 +108,11 @@ cv2.destroyAllWindows();
 
 
 
-orb = cv2.ORB_create();
+orb = cv2.xfeatures2d.SURF_create();
 kp1, des1 = orb.detectAndCompute(dstImgL, None);
 kp2, des2 = orb.detectAndCompute(dstImgR, None);
+des1 = des1.astype(np.uint8);
+des2 = des2.astype(np.uint8);
 
 bf = cv2.BFMatcher(cv2.NORM_HAMMING, True);
 matches = bf.match(des1, des2);
@@ -121,7 +125,7 @@ plt.imshow(displayImg), plt.show();
 cv2.imwrite(imgpath2.format("stereoMatching_2"), displayImg);
 
 
-stereo = cv2.StereoSGBM_create(0, 16, 3, 21, 30, 100);
+stereo = cv2.StereoSGBM_create(0, 16, 3, 21, 8*3*height**2, 32*4*width**2);
 display = stereo.compute(dstImgL, dstImgR);
 
 cv2.imwrite(imgpath2.format("streoMatching_result"), display);
