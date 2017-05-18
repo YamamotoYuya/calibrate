@@ -73,7 +73,7 @@ cv2.destroyAllWindows();
 '''
 
 #calc match points
-surf = cv2.BRISK_create();#xfeatures2d.SURF
+surf = cv2.AKAZE_create();#xfeatures2d.SURF
 kp1, des1 = surf.detectAndCompute(imgL, None);
 kp2, des2 = surf.detectAndCompute(imgR, None);
 des1 = des1.astype(np.uint8);
@@ -115,7 +115,8 @@ dstL = cv2.warpPerspective(imgL, HL, (width,height));
 dstR = cv2.warpPerspective(imgR, HR, (width,height));
 
 #stereoSGBM
-stereo =  cv2.StereoSGBM_create(0, 16, 3, 21, 8*3*height**2, 32*4*width**2);
+
+stereo =  cv2.StereoSGBM_create(0, 64, 21, speckleWindowSize=30, speckleRange=1);
 disp = stereo.compute(dstL, dstR);
 
 
@@ -148,20 +149,21 @@ displayImg = cv2.drawMatches(dstL, kp1, dstR, kp2, matches[:20], None, **draw_pa
 plt.imshow(displayImg), plt.show();
 cv2.imwrite(imgpath.format("matching_2.jpg"), displayImg);
 
-
+disp = disp.astype(np.uint8);
+disp = cv2.equalizeHist(disp);
 
 cv2.imwrite(imgpath.format("streo.jpg"), disp);
 cv2.imwrite(imgpath.format("streoL.jpg"), dstL);
 cv2.imwrite(imgpath.format("streoR.jpg"), dstR);
 
-'''
+
 cv2.imshow("imgR", dstR);
 cv2.imshow("imgL", dstL);
+cv2.imshow("stereo", disp);
 cv2.waitKey(0);
 cv2.destroyAllWindows();
-'''
-        
-    
+
+
 
 
 

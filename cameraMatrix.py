@@ -39,7 +39,7 @@ for i in range(9):
 #get cameramatrix
 height, width = img1.shape[:2];
 ret, cameraMatrix1, distCoeffs1, rvecs1, tvecs1 = cv2.calibrateCamera(objectPoints, imgPoints1, (width, height), None, None);
-img1 = cv2.imread("C:/Users/i13yamamoto2y/Documents/tmp2/stereo/0.jpg");
+img1 = cv2.imread("C:/Users/i13yamamoto2y/Documents/tmp/camera1/0.jpg");
 distL = cv2.undistort(img1, cameraMatrix1, distCoeffs1, None, None);
 
 
@@ -56,7 +56,7 @@ for i in range(9):
 
 #get cameramatrix
 ret, cameraMatrix2, distCoeffs2, rvecs2, tvecs2 = cv2.calibrateCamera(objectPoints, imgPoints2, (width, height), None, None);
-img2 = cv2.imread("C:/Users/i13yamamoto2y/Documents/tmp2/stereo/1.jpg");
+img2 = cv2.imread("C:/Users/i13yamamoto2y/Documents/tmp/camera2/1.jpg");
 distR = cv2.undistort(img2, cameraMatrix2, distCoeffs2, None, None);
 
 

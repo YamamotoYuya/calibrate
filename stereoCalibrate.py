@@ -78,7 +78,7 @@ draw_params = dict(matchColor = (0,255,0),
                    flags = 0);
 displayImg = cv2.drawMatches(img1, kp1, img2, kp2, matches[:30], None, **draw_params);
 plt.imshow(displayImg), plt.show();
-cv2.imwrite(imgpath2.format("streoMatching_1"), displayImg);
+cv2.imwrite(imgpath2.format("stereoMatching_1"), displayImg);
 
 
 
@@ -123,21 +123,21 @@ plt.imshow(displayImg), plt.show();
 cv2.imwrite(imgpath2.format("stereoMatching_2"), displayImg);
 
 
-stereo = cv2.StereoSGBM_create(0, 16, 3, 21, 8*3*height**2, 32*4*width**2);
-display = stereo.compute(remapedImgL, remapedImgR);
+stereo = cv2.StereoSGBM_create(0, 16, 3, 8*3*height**2, 32*3*width**2, 1, 0, 10, 100, 32, True);
+disp = stereo.compute(remapedImgL, remapedImgR);
 
-cv2.imwrite(imgpath2.format("streoMatching_result"), display);
+cv2.imwrite(imgpath2.format("streoMatching_result"), disp);
 cv2.imwrite(imgpath2.format("streoMatching_L"), remapedImgL);
 cv2.imwrite(imgpath2.format("streoMatching_R"), remapedImgR);
-display = display.astype(np.uint8);
+ 
+image3D = cv2.reprojectImageTo3D(disp, Q);
 
+disp = disp.astype(np.uint8);
 cv2.imshow("imgL", remapedImgL);
 cv2.imshow("imgR", remapedImgR);
-cv2.imshow("stereo", display);
+cv2.imshow("stereo", disp);
 cv2.waitKey(0);
 cv2.destroyAllWindows();
-
-
 
 
 
