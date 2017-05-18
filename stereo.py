@@ -63,17 +63,19 @@ height, width = img1.shape[:2];
 imgL = cv2.undistort(img1, cameraMatrix1, distCoeffs1, None, None);
 imgR = cv2.undistort(img2, cameraMatrix2, distCoeffs2, None, None);
 
-
+'''
 cv2.imshow("imgR", imgR);
 cv2.imshow("imgL", imgL);
 cv2.waitKey(0);
 cv2.destroyAllWindows();
-
+'''
 
 #calc match points
-orb = cv2.ORB_create();
-kp1, des1 = orb.detectAndCompute(imgL, None);
-kp2, des2 = orb.detectAndCompute(imgR, None);
+surf = cv2.BRISK_create();#xfeatures2d.SURF
+kp1, des1 = surf.detectAndCompute(imgL, None);
+kp2, des2 = surf.detectAndCompute(imgR, None);
+des1 = des1.astype(np.uint8);
+des2 = des2.astype(np.uint8);
 
 bf = cv2.BFMatcher(cv2.NORM_HAMMING, True);
 matches = bf.match(des1, des2);
@@ -81,16 +83,7 @@ matches = sorted(matches,key = lambda x:x.distance);
 
 pts1 = [];
 pts2 = [];
-for mat in matches:
-    idx1 = mat.queryIdx;
-    idx2 = mat.trainIdx;
-    pts1.append(kp1[idx1].pt);
-    pts2.append(kp2[idx2].pt);
-pts1 = np.int32(pts1);
-pts2 = np.int32(pts2);
 
-pts1 = [];
-pts2 = [];
 D_MATCH_THRES = 45.0
 for mat in matches:
     if mat.distance < D_MATCH_THRES:
@@ -116,14 +109,16 @@ ret, HL, HR = cv2.stereoRectifyUncalibrated(pts1, pts2, F, (width,height));
 dstL = cv2.warpPerspective(imgL, HL, (width,height));
 dstR = cv2.warpPerspective(imgR, HR, (width,height));
 
-#stereoBM
-stereo = cv2.StereoBM_create(16);
+#stereoSGBM
+stereo =  cv2.StereoSGBM_create(0, 16, 3, 21, 8*3*height**2, 32*4*width**2);
 disp = stereo.compute(dstL, dstR);
 
 
-orb = cv2.ORB_create();
-kp1, des1 = orb.detectAndCompute(dstL, None);
-kp2, des2 = orb.detectAndCompute(dstR, None);
+
+kp1, des1 = surf.detectAndCompute(dstL, None);
+kp2, des2 = surf.detectAndCompute(dstR, None);
+des1 = des1.astype(np.uint8);
+des2 = des2.astype(np.uint8);
 
 bf = cv2.BFMatcher(cv2.NORM_HAMMING, True);
 matches = bf.match(des1, des2);
@@ -131,6 +126,7 @@ matches = sorted(matches,key = lambda x:x.distance);
 
 pts1 = [];
 pts2 = [];
+
 for mat in matches:
     if mat.distance < D_MATCH_THRES:
         idx1 = mat.queryIdx;
