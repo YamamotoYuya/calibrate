@@ -57,8 +57,9 @@ ret, cameraMatrix2, distCoeffs2, rvecs2, tvecs2 = cv2.calibrateCamera(objectPoin
 
 
 img1 = cv2.imread(imgpath2.format(0), cv2.IMREAD_GRAYSCALE);
+img1 = cv2.equalizeHist(img1);
 img2 = cv2.imread(imgpath2.format(1), cv2.IMREAD_GRAYSCALE);
-
+img2 = cv2.equalizeHist(img2);
 
 
 from matplotlib import pyplot as plt

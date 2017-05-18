@@ -56,7 +56,9 @@ for i in range(5):
 
 #load and calibrate image                    
 img1 = cv2.imread(imgpath.format("0.jpg"), cv2.IMREAD_GRAYSCALE);
+img1 = cv2.equalizeHist(img1);
 img2 = cv2.imread(imgpath.format("1.jpg"), cv2.IMREAD_GRAYSCALE);
+img2 = cv2.equalizeHist(img2);
 
 height, width = img1.shape[:2];
 
