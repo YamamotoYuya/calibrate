@@ -96,6 +96,7 @@ for mat in matches:
 pts1 = np.int32(pts1);
 pts2 = np.int32(pts2);
 
+
 draw_params = dict(matchColor = (0,255,0),
                    matchesMask = None,
                    flags = 0);
@@ -107,6 +108,8 @@ cv2.imwrite(imgpath.format("matching_1.jpg"), displayImg);
 
 #calc fundamental matrix
 F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_8POINT);#FM_8POINT, FM_RANSAC, FM_LMEDS 
+pts1 = pts1[mask.ravel()==1]
+pts2 = pts2[mask.ravel()==1]
 ret, HL, HR = cv2.stereoRectifyUncalibrated(pts1, pts2, F, (width,height));
 dstL = cv2.warpPerspective(imgL, HL, (width,height));
 dstR = cv2.warpPerspective(imgR, HR, (width,height));
